@@ -50,6 +50,7 @@ class RegisterRequest extends FormRequest
             'email.required' => 'メールアドレスを入力してください',
             'email.email'    => '正しいメールアドレスを入力してください',
             'email.max'      => 'メールアドレスは255文字以内で入力してください',
+            'email.unique' => 'このメールアドレスはすでに登録されています',
             'password.required' => 'パスワードを入力してください',
             'password.min'      => 'パスワードは8文字以上20文字以内で入力してください',
             'password.max'      => 'パスワードは8文字以上20文字以内で入力してください',

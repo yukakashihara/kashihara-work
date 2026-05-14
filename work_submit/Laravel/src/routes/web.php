@@ -28,6 +28,9 @@ Route::get('/', 'TopController@index')->name('user.index');
 Route::get('/login', 'Auth\LoginController@index')->name('login');
 Route::post('/login', 'Auth\LoginController@login')->name('login.post');
 
+// ログアウト
+Route::post('/logout', 'Auth\LoginController@logout')->name('logout');
+
 // 新規登録画面
 Route::get('/register', 'Auth\RegisterController@index')->name('register.index');
 Route::post('/register', 'Auth\RegisterController@confirm')->name('register.post');

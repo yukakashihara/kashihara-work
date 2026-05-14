@@ -7,5 +7,9 @@
 </head>
 <body>
     <h1>ユーザートップページ</h1>
+    <form method="POST" action="{{ route('logout') }}">
+    @csrf
+    <button type="submit">ログアウト</button>
+</form>
 </body>
 </html>

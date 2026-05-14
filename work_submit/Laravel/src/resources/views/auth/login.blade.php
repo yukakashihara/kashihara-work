@@ -1,39 +1,46 @@
-<!DOCTYPE html>
-<html lang="ja">
+@extends('layouts.app')
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0">
-    <title>ログイン</title>
-</head>
+@section('title', 'ログイン')
 
-<body>
-    <h1>ログイン</h1>
-
-    <form method="POST" action="{{ route('login.post') }}">
-        @csrf
-        <div>
-            <label>メールアドレス</label>
-            <input type="email" name="email" required>
-            @error('email')
-            <p>{{ $message }}</p>
-            @enderror
+@section('content')
+<div class="row justify-content-center mt-5">
+    <div class="col-md-5">
+        <div class="card">
+            <div class="card-header text-center py-3" style="background-color: #4A90E2;">
+                <h4 class="text-white mb-0">ログイン</h4>
+            </div>
+            <div class="card-body">
+                <div class="text-center mb-4">
+                    <img src="" alt="ここにロゴをいれたい" class="rounded-circle" width="180" height="80" style="border: 1px solid #ccc;">
+                </div>
+                <form method="POST" action="{{ route('login.post') }}">
+                    @csrf
+                    <div class="mb-3">
+                        <label class="form-label">メールアドレス</label>
+                        <input type="email" name="email" class="form-control" required>
+                        @error('email')
+                        <div class="text-danger">{{ $message }}</div>
+                        @enderror
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">パスワード</label>
+                        <input type="password" name="password" class="form-control" required minlength="8" maxlength="20">
+                        @error('password')
+                        <div class="text-danger">{{ $message }}</div>
+                        @enderror
+                    </div>
+                    @error('login')
+                    <div class="text-danger mb-3">{{ $message }}</div>
+                    @enderror
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary">ログイン</button>
+                    </div>
+                </form>
+            </div>
+            <div class="card-footer text-center">
+                <a href="{{ route('register.index') }}">新規登録の方はこちら</a>
+            </div>
         </div>
-        <div>
-            <label>パスワード</label>
-            <input type="password" name="password" required minlength="8" maxlength="20">
-            @error('password')
-            <p>{{ $message }}</p>
-            @enderror
-        </div>
-        <button type="submit">ログイン</button>
-        @error('login')
-        <p>{{ $message }}</p>
-        @enderror
-    </form>
-
-    <a href="{{ route('register.index') }}">新規登録の方はこちら</a>
-
-</body>
-
-</html>
+    </div>
+</div>
+@endsection

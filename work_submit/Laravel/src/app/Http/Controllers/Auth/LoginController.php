@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\LoginRequest;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\Request;
 
 class LoginController extends Controller
 {
@@ -38,5 +39,13 @@ class LoginController extends Controller
             // 一般ユーザー
             return redirect()->route('user.index');
         }
+    }
+
+    // ログアウト処理
+    public function logout(Request $request)
+    {
+        Auth::logout();
+        $request->session()->invalidate();
+        return redirect()->route('login');
     }
 }

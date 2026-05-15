@@ -12,15 +12,31 @@ class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
 
+    // ロールの定数
+    const ADMIN = 0;  // 管理者
+    const USER  = 1;  // 一般ユーザー
+
     /**
      * The attributes that are mass assignable.
      *
      * @var array<int, string>
      */
+    protected $authPassword = 'password_hash';
+
+    public function getAuthPassword()
+    {
+        return $this->password_hash;
+    }
+
     protected $fillable = [
-        'name',
+        'last_name',
+        'first_name',
+        'last_name_kana',
+        'first_name_kana',
         'email',
-        'password',
+        'password_hash',
+        'status',
+        'role',
     ];
 
     /**

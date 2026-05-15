@@ -1,16 +1,21 @@
-<!DOCTYPE html>
-<html lang="ja">
+@extends('layouts.app')
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0">
-    <title>登録完了</title>
-</head>
+@section('title', '登録完了')
 
-<body>
-    <h1>登録完了</h1>
-    <p>会員登録が完了しました！</p>
-    <a href="{{ route('login') }}">ログイン画面へ</a>
-</body>
-
-</html>
+@section('content')
+<div class="row justify-content-center mt-5">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header text-center py-3" style="background-color: #4A90E2;">
+                <h4 class="text-white mb-0">登録完了</h4>
+            </div>
+            <div class="card-body text-center">
+                <p>会員登録が完了しました！</p>
+            </div>
+            <div class="card-footer text-center">
+                <a href="{{ route('login') }}">ログイン画面へ</a>
+            </div>
+        </div>
+    </div>
+</div>
+@endsection

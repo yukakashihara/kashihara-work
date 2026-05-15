@@ -11,7 +11,7 @@
             </div>
             <div class="card-body">
                 <div class="text-center mb-4">
-                    <img src="" alt="ここにロゴをいれたい" class="rounded-circle" width="180" height="80" style="border: 1px solid #ccc;">
+                    <i class="fa-solid fa-store" style="font-size: 80px; color: #4A90E2;"></i>
                 </div>
                 <form method="POST" action="{{ route('register.post') }}">
                     @csrf

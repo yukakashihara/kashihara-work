@@ -11,7 +11,7 @@
             </div>
             <div class="card-body">
                 <div class="text-center mb-4">
-                    <img src="" alt="ここにロゴをいれたい" class="rounded-circle" width="180" height="80" style="border: 1px solid #ccc;">
+                    <i class="fa-solid fa-moon" style="font-size: 80px; color: #4A90E2;"></i>
                 </div>
                 <form method="POST" action="{{ route('login.post') }}">
                     @csrf
@@ -38,7 +38,13 @@
                 </form>
             </div>
             <div class="card-footer text-center">
-                <a href="{{ route('register.index') }}">新規登録の方はこちら</a>
+                <div class="py-2">
+                    <a href="#">パスワードをお忘れの方はこちら</a>
+                </div>
+                <hr class="m-1">
+                <div class="py-2">
+                    <a href="{{ route('register.index') }}">新規登録の方はこちら</a>
+                </div>
             </div>
         </div>
     </div>

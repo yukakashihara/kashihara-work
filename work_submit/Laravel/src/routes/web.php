@@ -41,3 +41,6 @@ Route::post('/register/confirm', 'Auth\RegisterController@register')->name('regi
 
 // 登録完了画面
 Route::get('/register/complete', 'Auth\RegisterController@complete')->name('register.complete');
+
+// 商品一覧画面
+Route::get('/products', 'ProductController@index')->name('products.index');

@@ -15,9 +15,9 @@
 
 {{-- カテゴリタブ --}}
 <nav>
-    <a href="#">生果</a>
-    <a href="#">ジュース</a>
-    <a href="#">グッズ</a>
+    <a href="{{ route('products.index', ['category_id' => 1]) }}">生果</a>
+    <a href="{{ route('products.index', ['category_id' => 2]) }}">ジュース</a>
+    <a href="{{ route('products.index', ['category_id' => 3]) }}">グッズ</a>
 </nav>
 
 {{-- メインエリア --}}
@@ -61,54 +61,43 @@
     {{-- コンテンツエリア --}}
     <main>
         {{-- 検索バー --}}
-        <div>
-            <input type="text" placeholder="商品を検索してください">
-            <button type="button">検索</button>
-        </div>
+        <form action="{{ route('products.index') }}" method="GET">
+            <input type="text" name="keyword" placeholder="商品を検索してください" value="{{ request('keyword') }}">
+            <button type="submit">検索</button>
+        </form>
 
         {{-- 件数表示とソート --}}
-        <div>
-            <p>〇件の商品</p>
-            <select>
-                <option value="popular">人気順</option>
-                <option value="new">新着順</option>
-                <option value="price_asc">価格が安い順</option>
-                <option value="price_desc">価格が高い順</option>
+        <form action="{{ route('products.index') }}" method="GET">
+            <input type="hidden" name="category_id" value="{{ request('category_id') }}">
+            <p>{{ $products->count() }}件の商品</p>
+            <select name="sort" onchange="this.form.submit()">
+                <option value="popular" {{ request('sort') === 'popular' ? 'selected' : '' }}>人気順</option>
+                <option value="new" {{ request('sort') === 'new' ? 'selected' : '' }}>新着順</option>
+                <option value="price_asc" {{ request('sort') === 'price_asc' ? 'selected' : '' }}>価格が安い順</option>
+                <option value="price_desc" {{ request('sort') === 'price_desc' ? 'selected' : '' }}>価格が高い順</option>
             </select>
-        </div>
+        </form>
 
         {{-- 商品一覧 --}}
         <div>
-            {{-- 商品カード1 --}}
+            @foreach ($products as $product)
             <div>
-                <img src="" alt="商品画像">
-                <p>在庫あり</p>
-                <p>温州みかん（5kg）</p>
-                <p>¥2,980</p>
-                <button type="button">カートに追加</button>
-                <button type="button">♡</button>
-            </div>
+                <img src="{{ $product->image_path }}" alt="商品画像">
 
-            {{-- 商品カード2 --}}
-            <div>
-                <img src="" alt="商品画像">
-                <p>残りわずか</p>
-                <p>河内晩柑（5kg）</p>
-                <p>¥2,480</p>
-                <button type="button">カートに追加</button>
-                <button type="button">♡</button>
-            </div>
-
-            {{-- 商品カード3 --}}
-            <div>
-                <img src="" alt="商品画像">
+                @if ($product->stock_quantity === 0)
                 <p>在庫なし</p>
-                <p>ブラッドオレンジ（3kg）</p>
-                <p>¥3,480</p>
-                <button type="button">カートに追加</button>
-                <button type="button">♡</button>
-            </div>
+                @elseif ($product->stock_quantity <= 5)
+                    <p>残りわずか</p>
+                    @else
+                    <p>在庫あり</p>
+                    @endif
 
+                    <p>{{ $product->name }}</p>
+                    <p>¥{{ number_format($product->price) }}</p>
+                    <button type="button">カートに追加</button>
+                    <button type="button">♡</button>
+            </div>
+            @endforeach
         </div>
 
         {{-- ページネーション --}}

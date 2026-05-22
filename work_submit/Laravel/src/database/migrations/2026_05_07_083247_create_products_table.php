@@ -20,6 +20,8 @@ class CreateProductsTable extends Migration
             $table->unsignedBigInteger('category_id');
             $table->unsignedBigInteger('price');
             $table->unsignedBigInteger('stock_quantity');
+            $table->string('size')->nullable();
+            $table->string('taste')->nullable();
             $table->timestamps();
             $table->softDeletes();
             $table->string('image_path')->nullable();

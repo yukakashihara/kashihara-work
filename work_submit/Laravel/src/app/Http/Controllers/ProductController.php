@@ -21,6 +21,38 @@ class ProductController extends Controller
             $query->where('name', 'like', '%' . $request->keyword . '%');
         }
 
+        // サイズで絞り込み
+        if ($request->size) {
+            $query->whereIn('size', $request->size);
+        }
+
+        // 好みで絞り込み
+        if ($request->taste) {
+            $query->where(function ($q) use ($request) {
+                foreach ($request->taste as $taste) {
+                    $q->orWhere('taste', 'like', '%' . $taste . '%');
+                }
+            });
+        }
+
+        // 価格帯で絞り込み
+        if ($request->price) {
+            switch ($request->price) {
+                case '1':
+                    $query->where('price', '<=', 3000);
+                    break;
+                case '2':
+                    $query->whereBetween('price', [3001, 5000]);
+                    break;
+                case '3':
+                    $query->whereBetween('price', [5001, 10000]);
+                    break;
+                case '4':
+                    $query->where('price', '>=', 10001);
+                    break;
+            }
+        }
+
         // ソート
         switch ($request->sort) {
             case 'new':

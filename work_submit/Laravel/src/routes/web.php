@@ -44,3 +44,6 @@ Route::get('/register/complete', 'Auth\RegisterController@complete')->name('regi
 
 // 商品一覧画面
 Route::get('/products', 'ProductController@index')->name('products.index');
+
+// お気に入り登録・解除
+Route::post('/favorites/{product_id}', 'FavoriteController@toggle')->name('favorites.toggle');

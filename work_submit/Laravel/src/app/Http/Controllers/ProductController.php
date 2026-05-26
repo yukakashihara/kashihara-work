@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Product;
+use App\Models\Favorite;
 
 class ProductController extends Controller
 {
@@ -70,6 +71,15 @@ class ProductController extends Controller
         }
 
         $products = $query->get();
-        return view('products.index', compact('products'));
+
+        // お気に入り済みの商品IDを取得
+        $favoriteProductIds = [];
+        if (auth()->check()) {
+            $favoriteProductIds = Favorite::where('user_id', auth()->id())
+                ->pluck('product_id')
+                ->toArray();
+        }
+
+        return view('products.index', compact('products', 'favoriteProductIds'));
     }
 }

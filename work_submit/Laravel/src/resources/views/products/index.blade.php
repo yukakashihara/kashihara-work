@@ -7,9 +7,17 @@
 <header class="d-flex justify-content-between align-items-center py-3 border-bottom">
     <div class="fw-bold fs-4">🍊 Sample Shop</div>
     <div class="d-flex gap-3 fs-5">
-        <a href="#"><i class="fa-regular fa-heart"></i></a>
-        <a href="#"><i class="fa-solid fa-cart-shopping"></i></a>
-        <a href="#"><i class="fa-regular fa-user"></i></a>
+        <a href="#"><i class="fa-regular fa-heart text-success"></i></a>
+        <a href="#"><i class="fa-solid fa-cart-shopping text-success"></i></a>
+        <a href="#"><i class="fa-regular fa-user text-success"></i></a>
+        @auth
+            <form action="{{ route('logout') }}" method="POST">
+                @csrf
+                <button type="submit">ログアウト</button>
+            </form>
+        @else
+            <a href="{{ route('login') }}">ログイン</a>
+        @endauth
     </div>
 </header>
 
@@ -100,7 +108,12 @@
                         <p>{{ $product->name }}</p>
                         <p>¥{{ number_format($product->price) }}</p>
                         <button type="button">カートに追加</button>
-                        <button type="button">♡</button>
+                        <button
+                            type="button"
+                            class="favorite-btn {{ in_array($product->id, $favoriteProductIds) ? 'active' : '' }}"
+                            data-product-id="{{ $product->id }}">
+                            {{ in_array($product->id, $favoriteProductIds) ? '♥' : '♡' }}
+                        </button>
                 </div>
                 @endforeach
             </div>

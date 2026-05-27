@@ -4,43 +4,48 @@
 
 @section('content')
 {{-- ヘッダー --}}
-<header class="d-flex justify-content-between align-items-center py-3 border-bottom">
-    <div class="fw-bold fs-4">🍊 Sample Shop</div>
-    <div class="d-flex gap-3 fs-5">
-        <a href="#"><i class="fa-regular fa-heart text-success"></i></a>
-        <a href="#"><i class="fa-solid fa-cart-shopping text-success"></i></a>
-        <a href="#"><i class="fa-regular fa-user text-success"></i></a>
+<header class="d-flex justify-content-between align-items-center px-4 py-3 border-bottom bg-white">
+    <div class="fw-bold fs-5 tracking-wide">🍊 SAMPLE SHOP</div>
+    <div class="d-flex align-items-center gap-4">
+        <a href="#" class="text-dark text-decoration-none"><i class="fa-regular fa-heart"></i></a>
+        <a href="#" class="text-dark text-decoration-none"><i class="fa-solid fa-cart-shopping"></i></a>
+        <a href="#" class="text-dark text-decoration-none"><i class="fa-regular fa-user"></i></a>
         @auth
-            <form action="{{ route('logout') }}" method="POST">
-                @csrf
-                <button type="submit">ログアウト</button>
-            </form>
+        <form action="{{ route('logout') }}" method="POST" class="m-0">
+            @csrf
+            <button type="submit" class="btn btn-sm btn-outline-dark rounded-0 px-3">LOGOUT</button>
+        </form>
         @else
-            <a href="{{ route('login') }}">ログイン</a>
+        <a href="{{ route('login') }}" class="btn btn-sm btn-dark rounded-0 px-3">LOGIN</a>
         @endauth
     </div>
 </header>
 
 {{-- カテゴリタブ --}}
-<ul class="nav nav-tabs mb-3">
-    <li class="nav-item">
-        <a data-toggle="tab" class="nav-link text-success" href="{{ route('products.index', ['category_id' => 1]) }}">生果</a>
-    </li>
-    <li class="nav-item">
-        <a data-toggle="tab" class="nav-link text-success" href="{{ route('products.index', ['category_id' => 2]) }}">ジュース</a>
-    </li>
-    <li class="nav-item">
-        <a data-toggle="tab" class="nav-link text-success" href="{{ route('products.index', ['category_id' => 3]) }}">グッズ</a>
-    </li>
-</ul>
+<nav class="border-bottom bg-white px-4">
+    <div class="d-flex gap-4">
+        <a href="{{ route('products.index', ['category_id' => 1]) }}"
+            class="py-3 text-decoration-none text-dark border-bottom border-2 {{ request('category_id') == 1 ? 'border-dark' : 'border-transparent' }}">
+            生果
+        </a>
+        <a href="{{ route('products.index', ['category_id' => 2]) }}"
+            class="py-3 text-decoration-none text-dark border-bottom border-2 {{ request('category_id') == 2 ? 'border-dark' : 'border-transparent' }}">
+            ジュース
+        </a>
+        <a href="{{ route('products.index', ['category_id' => 3]) }}"
+            class="py-3 text-decoration-none text-dark border-bottom border-2 {{ request('category_id') == 3 ? 'border-dark' : 'border-transparent' }}">
+            グッズ
+        </a>
+    </div>
+</nav>
 
 <form action="{{ route('products.index') }}" method="GET">
     <input type="hidden" name="category_id" value="{{ request('category_id') }}">
 
     {{-- メインエリア --}}
-    <div>
+    <div class="d-flex gap-4 px-4 py-4">
         {{-- サイドバー --}}
-        <aside>
+        <aside style="width: 200px; flex-shrink: 0;">
 
             {{-- サイズ規格 --}}
 
@@ -74,7 +79,7 @@
         </aside>
 
         {{-- コンテンツエリア --}}
-        <main>
+        <main class="flex-grow-1">
             {{-- 検索バー --}}
 
             <input type="text" name="keyword" placeholder="商品を検索してください" value="{{ request('keyword') }}">
@@ -92,28 +97,33 @@
 
             {{-- 商品一覧 --}}
 
-            <div>
+            <div class="row row-cols-3 g-3">
                 @foreach ($products as $product)
-                <div>
-                    <img src="{{ $product->image_path }}" alt="商品画像">
+                <div class="col">
+                    <div class="card h-100 border rounded-0 position-relative">
+                        <img src="{{ $product->image_path }}" alt="商品画像" class="card-img-top">
 
-                    @if ($product->stock_quantity === 0)
-                    <p>在庫なし</p>
-                    @elseif ($product->stock_quantity <= 5)
-                        <p>残りわずか</p>
-                        @else
-                        <p>在庫あり</p>
-                        @endif
+                        @if ($product->stock_quantity === 0)
+                        <p>在庫なし</p>
+                        @elseif ($product->stock_quantity <= 5)
+                            <p>残りわずか</p>
+                            @else
+                            <p>在庫あり</p>
+                            @endif
 
-                        <p>{{ $product->name }}</p>
-                        <p>¥{{ number_format($product->price) }}</p>
-                        <button type="button">カートに追加</button>
-                        <button
-                            type="button"
-                            class="favorite-btn {{ in_array($product->id, $favoriteProductIds) ? 'active' : '' }}"
-                            data-product-id="{{ $product->id }}">
-                            {{ in_array($product->id, $favoriteProductIds) ? '♥' : '♡' }}
-                        </button>
+                            <div class="card-body">
+                                <p class="card-title mb-1">{{ $product->name }}</p>
+                                <p class="mb-2">¥{{ number_format($product->price) }}</p>
+                                <button type="button" class="btn btn-dark btn-sm rounded-0 w-100 mb-2">カートに追加</button>
+                                <button
+                                    type="button"
+                                    class="favorite-btn btn position-absolute top-0 end-0 m-2 {{ in_array($product->id, $favoriteProductIds) ? 'active' : '' }}"
+                                    data-product-id="{{ $product->id }}"
+                                    style="z-index: 1; background: none; border: none; font-size: 1.2rem;">
+                                    {{ in_array($product->id, $favoriteProductIds) ? '♥' : '♡' }}
+                                </button>
+                            </div>
+                    </div>
                 </div>
                 @endforeach
             </div>

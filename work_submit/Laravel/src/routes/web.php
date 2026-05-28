@@ -47,3 +47,8 @@ Route::get('/products', 'ProductController@index')->name('products.index');
 
 // お気に入り登録・解除
 Route::post('/favorites/{product_id}', 'FavoriteController@toggle')->name('favorites.toggle');
+
+// カートに追加
+Route::post('/cart', 'CartController@add')->name('cart.add');
+Route::delete('/cart/{product_id}', 'CartController@remove')->name('cart.remove');
+Route::patch('/cart/{product_id}', 'CartController@update')->name('cart.update');

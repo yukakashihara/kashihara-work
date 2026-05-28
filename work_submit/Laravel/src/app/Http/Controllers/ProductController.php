@@ -80,6 +80,15 @@ class ProductController extends Controller
                 ->toArray();
         }
 
-        return view('products.index', compact('products', 'favoriteProductIds'));
+        // カート内の商品IDと数量を取得
+        $cartItems = [];
+        if (auth()->check()) {
+            $cartItems = \App\Models\Cart::where('user_id', auth()->id())
+                ->get()
+                ->keyBy('product_id')
+                ->toArray();
+        }
+
+        return view('products.index', compact('products', 'favoriteProductIds', 'cartItems'));
     }
 }

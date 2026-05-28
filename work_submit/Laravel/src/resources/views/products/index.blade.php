@@ -95,6 +95,11 @@
                 <option value="price_desc" {{ request('sort') === 'price_desc' ? 'selected' : '' }}>価格が高い順</option>
             </select>
 
+            {{-- 合計金額 --}}
+            <div id="cart-total">
+                合計金額：¥<span id="cart-total-price">0</span>（税込）
+            </div>
+
             {{-- 商品一覧 --}}
 
             <div class="row row-cols-3 g-3">
@@ -114,7 +119,26 @@
                             <div class="card-body">
                                 <p class="card-title mb-1">{{ $product->name }}</p>
                                 <p class="mb-2">¥{{ number_format($product->price) }}</p>
-                                <button type="button" class="btn btn-dark btn-sm rounded-0 w-100 mb-2">カートに追加</button>
+                                @if (isset($cartItems[$product->id]))
+                                <div class="d-flex align-items-center justify-content-between border rounded-pill px-3 py-1 mb-2"
+                                    id="cart-item-{{ $product->id }}">
+                                    <button type="button" class="cart-remove-btn btn btn-link p-0 text-danger"
+                                        data-product-id="{{ $product->id }}">🗑️</button>
+                                    <span id="cart-quantity-{{ $product->id }}">
+                                        {{ $cartItems[$product->id]['quantity'] }}
+                                    </span>
+                                    <button type="button" class="cart-plus-btn btn btn-link p-0 text-dark"
+                                        data-product-id="{{ $product->id }}">＋</button>
+                                </div>
+                                @else
+                                {{-- 未追加：カートに追加ボタン表示 --}}
+                                <button type="button" class="cart-btn btn btn-dark rounded-0 w-100 mb-2"
+                                    data-product-id="{{ $product->id }}"
+                                    {{ $product->stock_quantity === 0 ? 'disabled' : '' }}>
+                                    {{ $product->stock_quantity === 0 ? '在庫なし' : 'カートに追加' }}
+                                </button>
+                                @endif
+
                                 <button
                                     type="button"
                                     class="favorite-btn btn position-absolute top-0 end-0 m-2 {{ in_array($product->id, $favoriteProductIds) ? 'active' : '' }}"

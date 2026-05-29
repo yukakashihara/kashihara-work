@@ -89,6 +89,16 @@ class ProductController extends Controller
                 ->toArray();
         }
 
-        return view('products.index', compact('products', 'favoriteProductIds', 'cartItems'));
+        // 合計金額を計算（税込）
+        $cartTotal = 0;
+        if (auth()->check()) {
+            $carts = \App\Models\Cart::where('user_id', auth()->id())
+                ->with('product')
+                ->get();
+            $cartTotal = round($carts->sum(function ($cart) {
+                return $cart->product->price * $cart->quantity * 1.1;
+            }));
+        }
+        return view('products.index', compact('products', 'favoriteProductIds', 'cartItems', 'cartTotal'));
     }
 }

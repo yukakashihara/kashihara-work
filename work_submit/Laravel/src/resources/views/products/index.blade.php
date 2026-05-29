@@ -97,7 +97,7 @@
 
             {{-- 合計金額 --}}
             <div id="cart-total">
-                合計金額：¥<span id="cart-total-price">0</span>（税込）
+                合計金額：¥<span id="cart-total-price">{{ number_format($cartTotal) }}</span>（税込）
             </div>
 
             {{-- 商品一覧 --}}

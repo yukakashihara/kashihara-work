@@ -44,6 +44,7 @@ class CartController extends Controller
 
         return response()->json([
             'status' => 200,
+            'tax_included_total' => $this->calcTotal(),
         ], 200);
     }
 
@@ -65,6 +66,7 @@ class CartController extends Controller
 
         return response()->json([
             'status' => 200,
+            'tax_included_total' => $this->calcTotal(),
         ], 200);
     }
 

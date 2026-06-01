@@ -122,14 +122,20 @@
                                 @if (isset($cartItems[$product->id]))
                                 <div class="d-flex align-items-center justify-content-between border rounded-pill px-3 py-1 mb-2"
                                     id="cart-item-{{ $product->id }}">
+                                    @if ($cartItems[$product->id]['quantity'] === 1)
                                     <button type="button" class="cart-remove-btn btn btn-link p-0 text-danger"
                                         data-product-id="{{ $product->id }}">🗑️</button>
+                                    @else
+                                    <button type="button" class="cart-minus-btn btn btn-link p-0 text-dark"
+                                        data-product-id="{{ $product->id }}">－</button>
+                                    @endif
                                     <span id="cart-quantity-{{ $product->id }}">
                                         {{ $cartItems[$product->id]['quantity'] }}
                                     </span>
                                     <button type="button" class="cart-plus-btn btn btn-link p-0 text-dark"
                                         data-product-id="{{ $product->id }}">＋</button>
                                 </div>
+                                
                                 @else
                                 {{-- 未追加：カートに追加ボタン表示 --}}
                                 <button type="button" class="cart-btn btn btn-dark rounded-0 w-100 mb-2"

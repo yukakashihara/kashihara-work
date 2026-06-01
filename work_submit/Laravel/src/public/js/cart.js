@@ -92,6 +92,44 @@ document.addEventListener('click', function (e) {
                     response.json().then(function (data) {
                         quantityEl.textContent = newQuantity;
                         document.getElementById('cart-total-price').textContent = data.tax_included_total.toLocaleString();
+
+                        // 数量に応じてボタンを切り替え
+                        const leftBtn = quantityEl.previousElementSibling;
+                        if (newQuantity >= 2) {
+                            leftBtn.outerHTML = `<button type="button" class="cart-minus-btn btn btn-link p-0 text-dark" data-product-id="${productId}">－</button>`;
+                        }
+                    });
+                }
+            });
+    }
+});
+
+// －数量減少ボタン
+document.addEventListener('click', function (e) {
+    if (e.target.closest('.cart-minus-btn')) {
+        const productId = e.target.closest('.cart-minus-btn').dataset.productId;
+        const quantityEl = document.getElementById('cart-quantity-' + productId);
+        const newQuantity = parseInt(quantityEl.textContent) - 1;
+
+        fetch('/cart/' + productId, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+            },
+            body: JSON.stringify({ quantity: newQuantity }),
+        })
+            .then(function (response) {
+                if (response.ok) {
+                    response.json().then(function (data) {
+                        quantityEl.textContent = newQuantity;
+                        document.getElementById('cart-total-price').textContent = data.tax_included_total.toLocaleString();
+
+                        // 数量1になったら－を🗑️に切り替え
+                        const leftBtn = quantityEl.previousElementSibling;
+                        if (newQuantity === 1) {
+                            leftBtn.outerHTML = `<button type="button" class="cart-remove-btn btn btn-link p-0 text-danger" data-product-id="${productId}">🗑️</button>`;
+                        }
                     });
                 }
             });

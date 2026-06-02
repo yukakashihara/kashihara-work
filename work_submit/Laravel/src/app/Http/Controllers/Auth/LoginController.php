@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\LoginRequest;
 use App\Models\User;
+use App\Models\Cart;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 
@@ -27,8 +28,19 @@ class LoginController extends Controller
             ])->withInput();
         }
 
+        // セッションIDを取得
+        $sessionID = session('guest_id');
+
         // セッションを再生成（セキュリティ対策）
         $request->session()->regenerate();
+
+        // ログイン時にセッションのカートをユーザーのカートに合体させる 
+        if ($sessionID) {
+            $userID = auth()->id();
+            Cart::where('session_id', $sessionID)
+                ->update(['user_id' => $userID, 'session_id' => null]);
+            session()->forget('guest_id');
+        }
 
         // ログインしたユーザーの役割で分岐
         $user = Auth::user();

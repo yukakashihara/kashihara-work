@@ -24,6 +24,7 @@ class CartController extends Controller
         // カートに追加
         Cart::create([
             'user_id'    => auth()->id(),
+            'session_id' => $this->getSessionId(),
             'product_id' => $request->product_id,
             'quantity'   => $request->quantity ?? 1,
         ]);
@@ -38,9 +39,16 @@ class CartController extends Controller
     // カートから削除
     public function remove(int $product_id)
     {
-        Cart::where('user_id', auth()->id())
-            ->where('product_id', $product_id)
-            ->delete();
+        // ログイン済ならユーザーID、そうでなければセッションIDで削除
+        if (auth()->check()) {
+            Cart::where('user_id', auth()->id())
+                ->where('product_id', $product_id)
+                ->delete();
+        } else {
+            Cart::where('session_id', $this->getSessionId())
+                ->where('product_id', $product_id)
+                ->delete();
+        }
 
         return response()->json([
             'status' => 200,
@@ -60,9 +68,16 @@ class CartController extends Controller
             ], 422);
         }
 
-        Cart::where('user_id', auth()->id())
-            ->where('product_id', $product_id)
-            ->update(['quantity' => $request->quantity]);
+        // ログイン済ならユーザーID、そうでなければセッションIDで更新
+        if (auth()->check()) {
+            Cart::where('user_id', auth()->id())
+                ->where('product_id', $product_id)
+                ->update(['quantity' => $request->quantity]);
+        } else {
+            Cart::where('session_id', $this->getSessionId())
+                ->where('product_id', $product_id)
+                ->update(['quantity' => $request->quantity]);
+        }
 
         return response()->json([
             'status' => 200,
@@ -73,14 +88,30 @@ class CartController extends Controller
     // 合計金額を計算（税込）
     private function calcTotal()
     {
-        $carts = Cart::where('user_id', auth()->id())
-            ->with('product')
-            ->get();
+        // ログイン済ならユーザーID、そうでなければセッションIDでカート内の商品を取得
+        if (auth()->check()) {
+            $carts = Cart::where('user_id', auth()->id())
+                ->with('product')
+                ->get();
+        } else {
+            $carts = Cart::where('session_id', $this->getSessionId())
+                ->with('product')
+                ->get();
+        }
 
         $total = $carts->sum(function ($cart) {
             return $cart->product->price * $cart->quantity;
         });
 
         return round($total * 1.1); // 税込
+    }
+
+    // ゲストユーザーのセッションIDを取得
+    private function getSessionId()
+    {
+        if (!session('guest_id')) {
+            session(['guest_id' => uniqid()]);
+        }
+        return session('guest_id');
     }
 }

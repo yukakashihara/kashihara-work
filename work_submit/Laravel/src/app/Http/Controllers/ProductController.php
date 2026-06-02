@@ -82,17 +82,34 @@ class ProductController extends Controller
 
         // カート内の商品IDと数量を取得
         $cartItems = [];
+        // ログイン済みならユーザーID、そうでなければセッションIDでカート内の商品を取得
         if (auth()->check()) {
             $cartItems = \App\Models\Cart::where('user_id', auth()->id())
                 ->get()
                 ->keyBy('product_id')
                 ->toArray();
+        } else {
+            $sessionId = session('guest_id');
+            $cartItems = \App\Models\Cart::where('session_id', $sessionId)
+                ->get()
+                ->keyBy('product_id')
+                ->toArray();
         }
+
 
         // 合計金額を計算（税込）
         $cartTotal = 0;
+        // ログイン済みならユーザーID、そうでなければセッションIDでカート内の商品を取得
         if (auth()->check()) {
             $carts = \App\Models\Cart::where('user_id', auth()->id())
+                ->with('product')
+                ->get();
+            $cartTotal = round($carts->sum(function ($cart) {
+                return $cart->product->price * $cart->quantity * 1.1;
+            }));
+        } else {
+            $sessionId = session('guest_id');
+            $carts = \App\Models\Cart::where('session_id', $sessionId)
                 ->with('product')
                 ->get();
             $cartTotal = round($carts->sum(function ($cart) {

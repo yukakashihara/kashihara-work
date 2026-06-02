@@ -1,0 +1,117 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use App\Models\Cart;
+use App\Models\Product;
+
+class CartController extends Controller
+{
+    // カートに追加
+    public function add(Request $request)
+    {
+        $product = Product::find($request->product_id);
+
+        // 在庫確認
+        if ($product->stock_quantity === 0) {
+            return response()->json([
+                'status' => 422,
+                'message' => 'この商品は在庫切れです。'
+            ], 422);
+        }
+
+        // カートに追加
+        Cart::create([
+            'user_id'    => auth()->id(),
+            'session_id' => $this->getSessionId(),
+            'product_id' => $request->product_id,
+            'quantity'   => $request->quantity ?? 1,
+        ]);
+
+        return response()->json([
+            'status' => 200,
+            'message' => 'カートに追加しました。',
+            'tax_included_total' => $this->calcTotal(),
+        ], 200);
+    }
+
+    // カートから削除
+    public function remove(int $product_id)
+    {
+        // ログイン済ならユーザーID、そうでなければセッションIDで削除
+        if (auth()->check()) {
+            Cart::where('user_id', auth()->id())
+                ->where('product_id', $product_id)
+                ->delete();
+        } else {
+            Cart::where('session_id', $this->getSessionId())
+                ->where('product_id', $product_id)
+                ->delete();
+        }
+
+        return response()->json([
+            'status' => 200,
+            'tax_included_total' => $this->calcTotal(),
+        ], 200);
+    }
+
+    // カート内の数量を変更
+    public function update(Request $request, int $product_id)
+    {
+        // 在庫確認
+        $product = Product::find($product_id);
+        if ($product->stock_quantity < $request->quantity) {
+            return response()->json([
+                'status' => 422,
+                'message' => 'この商品は在庫切れです。'
+            ], 422);
+        }
+
+        // ログイン済ならユーザーID、そうでなければセッションIDで更新
+        if (auth()->check()) {
+            Cart::where('user_id', auth()->id())
+                ->where('product_id', $product_id)
+                ->update(['quantity' => $request->quantity]);
+        } else {
+            Cart::where('session_id', $this->getSessionId())
+                ->where('product_id', $product_id)
+                ->update(['quantity' => $request->quantity]);
+        }
+
+        return response()->json([
+            'status' => 200,
+            'tax_included_total' => $this->calcTotal(),
+        ], 200);
+    }
+
+    // 合計金額を計算（税込）
+    private function calcTotal()
+    {
+        // ログイン済ならユーザーID、そうでなければセッションIDでカート内の商品を取得
+        if (auth()->check()) {
+            $carts = Cart::where('user_id', auth()->id())
+                ->with('product')
+                ->get();
+        } else {
+            $carts = Cart::where('session_id', $this->getSessionId())
+                ->with('product')
+                ->get();
+        }
+
+        $total = $carts->sum(function ($cart) {
+            return $cart->product->price * $cart->quantity;
+        });
+
+        return round($total * 1.1); // 税込
+    }
+
+    // ゲストユーザーのセッションIDを取得
+    private function getSessionId()
+    {
+        if (!session('guest_id')) {
+            session(['guest_id' => uniqid()]);
+        }
+        return session('guest_id');
+    }
+}
